@@ -7,6 +7,9 @@ import { useState } from 'react'
 import { showAuthError } from '@/utils/errors'
 import styles from '@/styles/auth/index.module.scss'
 import spinnerStyles from '@/styles/spinner/index.module.scss'
+import { useStore } from 'effector-react'
+import { $mode } from '@/context/mode'
+import { useRouter } from 'next/router'
 
 const SignInForm = () => {
   const [spinner, setSpinner] = useState(false)
@@ -16,6 +19,10 @@ const SignInForm = () => {
     handleSubmit,
     resetField,
   } = useForm<IInputs>()
+
+  const mode = useStore($mode)
+  const darkModeClass = mode === 'dark' ? `${styles.dark_mode}` : ''
+  const route = useRouter()
 
   const onSubmit = async (data: IInputs) => {
     try {
@@ -28,6 +35,7 @@ const SignInForm = () => {
 
       resetField('name')
       resetField('password')
+      route.push('/dashboard')
     } catch (error) {
       showAuthError(error)
     } finally {
@@ -36,12 +44,17 @@ const SignInForm = () => {
   }
 
   return (
-    <form className={styles.form} onSubmit={handleSubmit(onSubmit)}>
-      <h2 className={`${styles.form_title} ${styles.title}`}>Login</h2>
+    <form
+      className={`${styles.form} ${darkModeClass}`}
+      onSubmit={handleSubmit(onSubmit)}
+    >
+      <h2 className={`${styles.form_title} ${styles.title} ${darkModeClass}`}>
+        Login
+      </h2>
       <NameInput register={register} errors={errors} />
       <PasswordInput register={register} errors={errors} />
       <button
-        className={`${styles.form__button} ${styles.button} ${styles.submit}`}
+        className={`${styles.form__button} ${styles.button} ${styles.submit} ${darkModeClass}`}
       >
         {spinner ? <div className={spinnerStyles.spinner}></div> : 'SIGN IN'}
       </button>
