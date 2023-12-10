@@ -6,10 +6,10 @@ import PasswordInput from '@/components/elements/AuthPage/PasswordInput'
 import { signUpFx } from '@/app/api/auth'
 import { showAuthError } from '@/utils/errors'
 import { useState } from 'react'
-import styles from '@/styles/auth/index.module.scss'
 import spinnerStyles from '@/styles/spinner/index.module.scss'
 import { useStore } from 'effector-react'
 import { $mode } from '@/context/mode'
+import styles from '@/styles/auth/index.module.scss'
 
 const SignUpForm = ({ switchForm }: { switchForm: () => void }) => {
   const [spinner, setSpinner] = useState(false)

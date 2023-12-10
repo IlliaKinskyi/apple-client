@@ -98,7 +98,7 @@ const AuthPage = () => {
         </div>
 
         <div
-          className={`${styles.switch__container} ${styles.is_hidden} ${darkModeClass}`}
+          className={`${styles.switch__container} ${styles.is_hidden}`}
           id="switch-c2"
           ref={switchC2}
         >

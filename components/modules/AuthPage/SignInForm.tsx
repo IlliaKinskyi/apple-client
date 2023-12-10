@@ -22,6 +22,7 @@ const SignInForm = () => {
 
   const mode = useStore($mode)
   const darkModeClass = mode === 'dark' ? `${styles.dark_mode}` : ''
+
   const route = useRouter()
 
   const onSubmit = async (data: IInputs) => {
