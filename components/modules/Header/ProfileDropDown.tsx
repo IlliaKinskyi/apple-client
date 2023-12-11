@@ -4,7 +4,7 @@ import { IWrappedComponentProps } from '@/types/common'
 import ProfileSvg from '@/components/elements/ProfileSvg/ProfileSvg'
 import { $mode } from '@/context/mode'
 import { AnimatePresence, motion } from 'framer-motion'
-import LogoutSvg from '@/components/elements/LogoutSvg.tsx/LogoutSvg'
+import LogoutSvg from '@/components/elements/LogoutSvg/LogoutSvg'
 import { withClickOutside } from '@/utils/withClickOutside'
 import styles from '@/styles/profileDropDown/index.module.scss'
 
