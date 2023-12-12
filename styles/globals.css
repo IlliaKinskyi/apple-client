@@ -35,7 +35,6 @@ body::-webkit-scrollbar-thumb:hover {
 }
 
 .container {
-  min-width: 1466px;
   padding: 0 15px;
   margin: 0 auto;
 }
@@ -75,4 +74,22 @@ a {
   font-style: normal;
   font-weight: 400;
   src: url(/fonts/Roboto-Regular.woff) format('woff');
+}
+
+.overlay {
+  background-color: rgba(0, 0, 0, 0.5);
+  height: 100%;
+  left: 0;
+  opacity: 0;
+  position: fixed;
+  top: 0;
+  visibility: hidden;
+  width: 100%;
+  z-index: -1;
+}
+
+.overlay.open {
+  visibility: visible;
+  opacity: 1;
+  z-index: 10;
 }

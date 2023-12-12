@@ -5,8 +5,11 @@ import Link from 'next/link'
 import SearchSvg from '@/components/elements/SearchSvg/SearchSvg'
 import SearchInput from '@/components/elements/Header/SearchInput'
 import ModeToggler from '@/components/elements/ModeToggler/ModeToggler'
+import CartPopUp from './CartPopUp/CartPopUp'
+import { useMediaQuery } from '@/hooks/useMediaQuery'
 
 const HeaderBottom = () => {
+  const isMedia950 = useMediaQuery(950)
   const mode = useStore($mode)
   const darkModeClass = mode === 'dark' ? `${styles.dark_mode}` : ''
 
@@ -16,7 +19,11 @@ const HeaderBottom = () => {
         <h1>
           <Link href="/dashboard" legacyBehavior passHref>
             <a className={styles.header__logo__link}>
-              <img src="/img/logo.svg" alt="logo" />
+              {mode === 'dark' ? (
+                <img src="/img/logo-light.svg" alt="logo" />
+              ) : (
+                <img src="/img/logo.svg" alt="logo" />
+              )}
               <span
                 className={`${styles.header__logo__link__text} ${darkModeClass}`}
               >
@@ -27,15 +34,15 @@ const HeaderBottom = () => {
         </h1>
         <div className={styles.header__search}>
           <SearchInput />
-          <button>
-            <span>
+          <button className={`${styles.header__search__btn} ${darkModeClass}`}>
+            <span className={styles.header__search__btn__span}>
               <SearchSvg />
             </span>
           </button>
         </div>
-        <div className="">
-          <ModeToggler />
-          <button>Cart</button>
+        <div className={styles.header__shopping_cart}>
+          {!isMedia950 && <ModeToggler />}
+          <CartPopUp />
         </div>
       </div>
     </div>
