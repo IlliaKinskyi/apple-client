@@ -20,7 +20,7 @@ const SearchInput = () => {
 
   return (
     <Select
-      placeholder="I looking..."
+      placeholder="I'm looking..."
       value={searchOption}
       onChange={handleSearchOptionChange}
       styles={{
