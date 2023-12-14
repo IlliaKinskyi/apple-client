@@ -14,7 +14,9 @@ const FooterLogo = () => {
             src={mode === 'dark' ? '/img/logo.svg' : '/img/logo-light.svg'}
             alt="logo"
           />
-          <span className={styles.footer__top__item__text}>Apple Store</span>
+          <span className={styles.footer__top__item__logo__text}>
+            Apple Store
+          </span>
         </a>
       </Link>
     </div>
