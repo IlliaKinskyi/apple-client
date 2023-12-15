@@ -93,3 +93,17 @@ a {
   opacity: 1;
   z-index: 10;
 }
+
+.slick-slide {
+  margin: 0 8px;
+}
+
+@media (max-width: 800px) {
+  .slick-slide {
+    margin: 0 6px;
+  }
+}
+
+.slick-track {
+  padding-top: 8px;
+}
