@@ -7,9 +7,9 @@ import { $mode } from '@/context/mode'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { useEffect } from 'react'
 import { IDashboardSlider } from '@/types/dashboard'
-import skeletonStyles from '@/styles/skeleton/index.module.scss'
 import { formatPrice } from '@/utils/common'
 import styles from '@/styles/dashboard/index.module.scss'
+import skeletonStyles from '@/styles/skeleton/index.module.scss'
 
 const DashboardSlider = ({
   items,

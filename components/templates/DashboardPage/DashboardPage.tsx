@@ -4,12 +4,12 @@ import CartAlert from '@/components/modules/DashboardPage/CartAlert'
 import DashboardSlider from '@/components/modules/DashboardPage/DashboardSlider'
 import { $mode } from '@/context/mode'
 import { $shoppingCart } from '@/context/shopping-cart'
-import styles from '@/styles/dashboard/index.module.scss'
 import { IItems } from '@/types/items'
 import { useStore } from 'effector-react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
+import styles from '@/styles/dashboard/index.module.scss'
 
 const DashboardPage = () => {
   const [newItems, setNewItems] = useState<IItems>({} as IItems)
