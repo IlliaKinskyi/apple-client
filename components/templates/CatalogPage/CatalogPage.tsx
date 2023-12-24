@@ -3,12 +3,13 @@ import FilterBlock from '@/components/modules/CatalogPage/FilterBlock'
 import FilterSelect from '@/components/modules/CatalogPage/FilterSelect'
 import { $items, setItems } from '@/context/items'
 import { $mode } from '@/context/mode'
-import styles from '@/styles/catalog/index.module.scss'
 import { useStore } from 'effector-react'
 import { AnimatePresence } from 'framer-motion'
 import { useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
 import skeletonStyles from '@/styles/skeleton/index.module.scss'
+import styles from '@/styles/catalog/index.module.scss'
+import CatalogItem from '@/components/modules/CatalogPage/CatalogItem'
 
 const CatalogPage = () => {
   const mode = useStore($mode)
@@ -19,8 +20,6 @@ const CatalogPage = () => {
   useEffect(() => {
     loadItems()
   }, [])
-
-  console.log(items)
 
   const loadItems = async () => {
     try {
@@ -43,13 +42,18 @@ const CatalogPage = () => {
         </h2>
         <div className={`${styles.catalog__top} ${darkModeClass}`}>
           <AnimatePresence>
-            <FilterBlock title="Diagonal" />
+            {false && <FilterBlock title="Diagonal" />}
           </AnimatePresence>
           <AnimatePresence>
-            <FilterBlock title="Cpu" />
+            {false && <FilterBlock title="Cpu" />}
           </AnimatePresence>
           <div className={styles.catalog__top__inner}>
-            <button>Reset filters</button>
+            <button
+              className={`${styles.catalog__top__reset} ${darkModeClass}`}
+              disabled={true}
+            >
+              Reset filters
+            </button>
             <FilterSelect />
           </div>
         </div>
@@ -58,9 +62,9 @@ const CatalogPage = () => {
             <div className="">Filters</div>
             {spinner ? (
               <ul className={skeletonStyles.skeleton}>
-                {Array.from(new Array(8)).map((item) => (
+                {Array.from(new Array(8)).map((_, i) => (
                   <li
-                    key={item}
+                    key={i}
                     className={`${skeletonStyles.skeleton__item} ${
                       mode === 'dark' ? `${skeletonStyles.dark_mode}` : ''
                     }`}
@@ -72,7 +76,9 @@ const CatalogPage = () => {
             ) : (
               <ul className={styles.catalog__list}>
                 {items.rows?.length ? (
-                  items.rows.map((item) => <li key={item.id}></li>)
+                  items.rows.map((item) => (
+                    <CatalogItem item={item} key={item.id} />
+                  ))
                 ) : (
                   <span>Product list is empty...</span>
                 )}

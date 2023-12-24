@@ -5,11 +5,11 @@ import PasswordInput from '@/components/elements/AuthPage/PasswordInput'
 import { signInFx } from '@/app/api/auth'
 import { useState } from 'react'
 import { showAuthError } from '@/utils/errors'
-import styles from '@/styles/auth/index.module.scss'
-import spinnerStyles from '@/styles/spinner/index.module.scss'
 import { useStore } from 'effector-react'
 import { $mode } from '@/context/mode'
 import { useRouter } from 'next/router'
+import styles from '@/styles/auth/index.module.scss'
+import spinnerStyles from '@/styles/spinner/index.module.scss'
 
 const SignInForm = () => {
   const [spinner, setSpinner] = useState(false)
