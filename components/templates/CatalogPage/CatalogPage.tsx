@@ -10,12 +10,23 @@ import { toast } from 'react-toastify'
 import skeletonStyles from '@/styles/skeleton/index.module.scss'
 import styles from '@/styles/catalog/index.module.scss'
 import CatalogItem from '@/components/modules/CatalogPage/CatalogItem'
+import ReactPaginate from 'react-paginate'
+import { IQueryParams } from '@/types/catalog'
+import { useRouter } from 'next/router'
+import { IItems } from '@/types/items'
 
-const CatalogPage = () => {
+const CatalogPage = ({ query }: { query: IQueryParams }) => {
   const mode = useStore($mode)
   const items = useStore($items)
   const [spinner, setSpinner] = useState(false)
+  const pagesCount = Math.ceil(items.count / 20)
+  const isValidOffset =
+    query.offset && !isNaN(+query.offset) && +query.offset > 0
+  const [currentPage, setCurrentPage] = useState(
+    isValidOffset ? +query.offset - 1 : 0
+  )
   const darkModeClass = mode === 'dark' ? `${styles.dark_mode}` : ''
+  const router = useRouter()
 
   useEffect(() => {
     loadItems()
@@ -26,12 +37,83 @@ const CatalogPage = () => {
       setSpinner(true)
       const data = await getItemsFx('/items?limit=20&offset=0')
 
-      setItems(data)
+      if (!isValidOffset) {
+        router.replace({
+          query: {
+            offset: 1,
+          },
+        })
+
+        resetPagination(data)
+        return
+      }
+
+      if (isValidOffset) {
+        if (+query.offset > Math.ceil(data.count / 20)) {
+          router.push(
+            {
+              query: {
+                ...query,
+                offset: 1,
+              },
+            },
+            undefined,
+            { shallow: true }
+          )
+
+          setCurrentPage(0)
+          setItems(data)
+          return
+        }
+      }
+
+      const offset = +query.offset - 1
+      const result = await getItemsFx(`/items?limit=20&offset=${offset}`)
+
+      setCurrentPage(offset)
+      setItems(result)
     } catch (error) {
       toast.error((error as Error).message)
     } finally {
       setSpinner(false)
     }
+  }
+
+  const resetPagination = (data: IItems) => {
+    setCurrentPage(0)
+    setItems(data)
+  }
+
+  const handlePageChange = async ({ selected }: { selected: number }) => {
+    try {
+      const data = await getItemsFx('/items?limit=20&offset=0')
+
+      if (selected > pagesCount) {
+        resetPagination(data)
+        return
+      }
+
+      if (isValidOffset && +query.offset > Math.ceil(data.count / 2)) {
+        resetPagination(data)
+        return
+      }
+
+      const result = await getItemsFx(`/items?limit=20&offset=${selected}`)
+
+      router.push(
+        {
+          query: {
+            ...router.query,
+            offset: selected + 1,
+          },
+        },
+        undefined,
+        { shallow: true }
+      )
+
+      setCurrentPage(selected)
+      setItems(result)
+    } catch (error) {}
   }
 
   return (
@@ -85,6 +167,19 @@ const CatalogPage = () => {
               </ul>
             )}
           </div>
+          <ReactPaginate
+            containerClassName={styles.catalog__bottom__list}
+            pageClassName={styles.catalog__bottom__list__item}
+            pageLinkClassName={styles.catalog__bottom__list__item__link}
+            previousClassName={styles.catalog__bottom__list__prev}
+            nextClassName={styles.catalog__bottom__list__next}
+            breakClassName={styles.catalog__bottom__list__break}
+            breakLinkClassName={`${styles.catalog__bottom__list__break__link} ${darkModeClass}`}
+            breakLabel="..."
+            pageCount={pagesCount}
+            forcePage={currentPage}
+            onPageChange={handlePageChange}
+          />
         </div>
       </div>
     </section>

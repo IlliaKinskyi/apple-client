@@ -1,9 +1,10 @@
 import Layout from '@/components/layout/Layout'
 import CatalogPage from '@/components/templates/CatalogPage/CatalogPage'
 import userRedirectByUserCheck from '@/hooks/userRedirectByUserCheck'
+import { IQueryParams } from '@/types/catalog'
 import Head from 'next/head'
 
-function Catalog() {
+function Catalog({ query }: { query: IQueryParams }) {
   const { shouldLoadContent } = userRedirectByUserCheck()
 
   return (
@@ -18,13 +19,19 @@ function Catalog() {
       {shouldLoadContent && (
         <Layout>
           <main>
-            <CatalogPage />
+            <CatalogPage query={query} />
             <div className="overlay" />
           </main>
         </Layout>
       )}
     </>
   )
+}
+
+export async function getServerSideProps(context: { query: IQueryParams }) {
+  return {
+    props: { query: { ...context.query } },
+  }
 }
 
 export default Catalog
