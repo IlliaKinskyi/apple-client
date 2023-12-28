@@ -26,3 +26,20 @@ export interface IFilterBrandAccordionProps {
   setBrand: Event<IFilterCheckboxItem[]>
   updateBrand: Event<IFilterCheckboxItem>
 }
+
+export interface ICatalogFilterProps {
+  priceRange: number[]
+  setPriceRange: (arg0: number[]) => void
+  setIsPriceRangeChanged: (arg0: boolean) => void
+  resetFilterBtnDisabled: boolean
+}
+
+export interface IPriceRangeProps {
+  priceRange: number[]
+  setPriceRange: (arg0: number[]) => void
+  setIsPriceRangeChanged: (arg0: boolean) => void
+}
+
+export interface ICatalogFilterDekstopProps extends ICatalogFilterProps {
+  spinner: boolean
+}

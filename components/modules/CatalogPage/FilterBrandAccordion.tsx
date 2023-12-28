@@ -40,6 +40,7 @@ const FilterBrandAccordion = ({
             <FilterChecboxItem
               title={item.title}
               key={item.id}
+              id={item.id}
               checked={item.checked}
               event={updateBrand}
             />

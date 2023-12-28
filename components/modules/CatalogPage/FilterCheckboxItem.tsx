@@ -17,7 +17,11 @@ const FilterChecboxItem = ({
   return (
     <li className={`${styles.filters__brand__list__item} ${darkModeClass}`}>
       <label>
-        <input type="checked" checked={checked} onChange={handleFilterChange} />
+        <input
+          type="checkbox"
+          checked={checked}
+          onChange={handleFilterChange}
+        />
         <span>{title}</span>
       </label>
     </li>

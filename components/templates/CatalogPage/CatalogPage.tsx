@@ -1,25 +1,28 @@
 import { getItemsFx } from '@/app/api/items'
 import FilterBlock from '@/components/modules/CatalogPage/FilterBlock'
 import FilterSelect from '@/components/modules/CatalogPage/FilterSelect'
-import { $items, setItems } from '@/context/items'
+import { $items, $itemsBrand, setItems } from '@/context/items'
 import { $mode } from '@/context/mode'
 import { useStore } from 'effector-react'
 import { AnimatePresence } from 'framer-motion'
 import { useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
-import skeletonStyles from '@/styles/skeleton/index.module.scss'
-import styles from '@/styles/catalog/index.module.scss'
 import CatalogItem from '@/components/modules/CatalogPage/CatalogItem'
 import ReactPaginate from 'react-paginate'
 import { IQueryParams } from '@/types/catalog'
 import { useRouter } from 'next/router'
 import { IItems } from '@/types/items'
 import CatalogFilters from '@/components/modules/CatalogPage/CatalogFilters'
+import styles from '@/styles/catalog/index.module.scss'
+import skeletonStyles from '@/styles/skeleton/index.module.scss'
 
 const CatalogPage = ({ query }: { query: IQueryParams }) => {
   const mode = useStore($mode)
   const items = useStore($items)
+  const itemsBrand = useStore($itemsBrand)
   const [spinner, setSpinner] = useState(false)
+  const [priceRange, setPriceRange] = useState([1000, 9000])
+  const [isPriceRangeChanged, setIsPriceRangeChanged] = useState(false)
   const pagesCount = Math.ceil(items.count / 20)
   const isValidOffset =
     query.offset && !isNaN(+query.offset) && +query.offset > 0
@@ -28,6 +31,10 @@ const CatalogPage = ({ query }: { query: IQueryParams }) => {
   )
   const darkModeClass = mode === 'dark' ? `${styles.dark_mode}` : ''
   const router = useRouter()
+  const isAnyItemsBrandChecked = itemsBrand.some((item) => item.checked)
+  const resetFilterBtnDisabled = !(
+    isPriceRangeChanged || isAnyItemsBrandChecked
+  )
 
   useEffect(() => {
     loadItems()
@@ -133,7 +140,7 @@ const CatalogPage = ({ query }: { query: IQueryParams }) => {
           <div className={styles.catalog__top__inner}>
             <button
               className={`${styles.catalog__top__reset} ${darkModeClass}`}
-              disabled={true}
+              disabled={resetFilterBtnDisabled}
             >
               Reset filters
             </button>
@@ -142,7 +149,12 @@ const CatalogPage = ({ query }: { query: IQueryParams }) => {
         </div>
         <div className={styles.catalog__bottom}>
           <div className={styles.catalog__bottom__inner}>
-            <CatalogFilters />
+            <CatalogFilters
+              priceRange={priceRange}
+              setPriceRange={setPriceRange}
+              setIsPriceRangeChanged={setIsPriceRangeChanged}
+              resetFilterBtnDisabled={resetFilterBtnDisabled}
+            />
             {spinner ? (
               <ul className={skeletonStyles.skeleton}>
                 {Array.from(new Array(8)).map((_, i) => (
