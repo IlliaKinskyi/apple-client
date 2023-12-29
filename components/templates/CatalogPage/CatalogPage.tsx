@@ -1,7 +1,13 @@
 import { getItemsFx } from '@/app/api/items'
 import FilterBlock from '@/components/modules/CatalogPage/FilterBlock'
 import FilterSelect from '@/components/modules/CatalogPage/FilterSelect'
-import { $items, $itemsBrand, setItems } from '@/context/items'
+import {
+  $items,
+  $itemsBrand,
+  setItems,
+  setItemsBrand,
+  updateItemsBrand,
+} from '@/context/items'
 import { $mode } from '@/context/mode'
 import { useStore } from 'effector-react'
 import { AnimatePresence } from 'framer-motion'
@@ -124,6 +130,20 @@ const CatalogPage = ({ query }: { query: IQueryParams }) => {
     } catch (error) {}
   }
 
+  const resetFilter = async () => {
+    try {
+      const data = await getItemsFx('/items?limit=20&offset=0')
+
+      setItemsBrand(itemsBrand.map((item) => ({ ...item, checked: false })))
+
+      setItems(data)
+      setPriceRange([1000, 9000])
+      setIsPriceRangeChanged(false)
+    } catch (error) {
+      toast.error((error as Error).message)
+    }
+  }
+
   return (
     <section className={styles.catalog}>
       <div className={`container ${styles.catalog__container}`}>
@@ -132,15 +152,19 @@ const CatalogPage = ({ query }: { query: IQueryParams }) => {
         </h2>
         <div className={`${styles.catalog__top} ${darkModeClass}`}>
           <AnimatePresence>
-            {false && <FilterBlock title="Diagonal" />}
-          </AnimatePresence>
-          <AnimatePresence>
-            {false && <FilterBlock title="Cpu" />}
+            {isAnyItemsBrandChecked && (
+              <FilterBlock
+                title="Brand"
+                event={updateItemsBrand}
+                brandList={itemsBrand}
+              />
+            )}
           </AnimatePresence>
           <div className={styles.catalog__top__inner}>
             <button
               className={`${styles.catalog__top__reset} ${darkModeClass}`}
               disabled={resetFilterBtnDisabled}
+              onClick={resetFilter}
             >
               Reset filters
             </button>
@@ -154,6 +178,7 @@ const CatalogPage = ({ query }: { query: IQueryParams }) => {
               setPriceRange={setPriceRange}
               setIsPriceRangeChanged={setIsPriceRangeChanged}
               resetFilterBtnDisabled={resetFilterBtnDisabled}
+              resetFilter={resetFilter}
             />
             {spinner ? (
               <ul className={skeletonStyles.skeleton}>

@@ -36,7 +36,7 @@ const FilterBrandAccordion = ({
           Select All
         </button>
         <ul className={styles.filters__brand__list}>
-          {itemsBrand.map((item) => (
+          {brandList.map((item) => (
             <FilterChecboxItem
               title={item.title}
               key={item.id}
