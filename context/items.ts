@@ -10,6 +10,7 @@ export const setItems = items.createEvent<IItems>()
 export const setItemsCheapFirst = items.createEvent()
 export const setItemsExpensiveFirst = items.createEvent()
 export const setItemsByPopularity = items.createEvent()
+export const setFilteredItems = items.createEvent<IItems>()
 export const setItemsBrand = items.createEvent<IFilterCheckboxItem[]>()
 export const updateItemsBrand = items.createEvent<IFilterCheckboxItem>()
 
@@ -51,3 +52,7 @@ export const $itemsBrand = items
   .on(updateItemsBrand, (state, payload) => [
     ...updateBrand(state, payload.id as string, { checked: payload.checked }),
   ])
+
+export const $filteredItems = items
+  .createStore<IItems>({} as IItems)
+  .on(setFilteredItems, (_, products) => products)

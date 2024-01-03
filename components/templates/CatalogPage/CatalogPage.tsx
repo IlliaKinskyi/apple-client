@@ -2,6 +2,7 @@ import { getItemsFx } from '@/app/api/items'
 import FilterBlock from '@/components/modules/CatalogPage/FilterBlock'
 import FilterSelect from '@/components/modules/CatalogPage/FilterSelect'
 import {
+  $filteredItems,
   $items,
   $itemsBrand,
   setItems,
@@ -26,8 +27,10 @@ const CatalogPage = ({ query }: { query: IQueryParams }) => {
   const mode = useStore($mode)
   const items = useStore($items)
   const itemsBrand = useStore($itemsBrand)
+  const filteredItems = useStore($filteredItems)
   const [spinner, setSpinner] = useState(false)
   const [priceRange, setPriceRange] = useState([1000, 9000])
+  const [isFilterInQuery, setIsFilterInQuery] = useState(false)
   const [isPriceRangeChanged, setIsPriceRangeChanged] = useState(false)
   const pagesCount = Math.ceil(items.count / 20)
   const isValidOffset =
@@ -44,7 +47,7 @@ const CatalogPage = ({ query }: { query: IQueryParams }) => {
 
   useEffect(() => {
     loadItems()
-  }, [])
+  }, [filteredItems, isFilterInQuery])
 
   const loadItems = async () => {
     try {
@@ -76,16 +79,19 @@ const CatalogPage = ({ query }: { query: IQueryParams }) => {
           )
 
           setCurrentPage(0)
-          setItems(data)
+          setItems(isFilterInQuery ? filteredItems : data)
           return
         }
+        const offset = +query.offset - 1
+        const result = await getItemsFx(`/items?limit=20&offset=${offset}`)
+
+        setCurrentPage(offset)
+        setItems(isFilterInQuery ? filteredItems : result)
+        return
       }
 
-      const offset = +query.offset - 1
-      const result = await getItemsFx(`/items?limit=20&offset=${offset}`)
-
-      setCurrentPage(offset)
-      setItems(result)
+      setCurrentPage(0)
+      setItems(isFilterInQuery ? filteredItems : data)
     } catch (error) {
       toast.error((error as Error).message)
     } finally {
@@ -179,6 +185,9 @@ const CatalogPage = ({ query }: { query: IQueryParams }) => {
               setIsPriceRangeChanged={setIsPriceRangeChanged}
               resetFilterBtnDisabled={resetFilterBtnDisabled}
               resetFilter={resetFilter}
+              isPriceRangeChanged={isPriceRangeChanged}
+              currentPage={currentPage}
+              setIsFilterInQuery={setIsFilterInQuery}
             />
             {spinner ? (
               <ul className={skeletonStyles.skeleton}>
