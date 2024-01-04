@@ -29,7 +29,7 @@ const CatalogPage = ({ query }: { query: IQueryParams }) => {
   const itemsBrand = useStore($itemsBrand)
   const filteredItems = useStore($filteredItems)
   const [spinner, setSpinner] = useState(false)
-  const [priceRange, setPriceRange] = useState([1000, 9000])
+  const [priceRange, setPriceRange] = useState([1000, 100000])
   const [isFilterInQuery, setIsFilterInQuery] = useState(false)
   const [isPriceRangeChanged, setIsPriceRangeChanged] = useState(false)
   const pagesCount = Math.ceil(items.count / 20)
@@ -95,7 +95,7 @@ const CatalogPage = ({ query }: { query: IQueryParams }) => {
     } catch (error) {
       toast.error((error as Error).message)
     } finally {
-      setSpinner(false)
+      setTimeout(() => setSpinner(false), 1000)
     }
   }
 
@@ -106,19 +106,30 @@ const CatalogPage = ({ query }: { query: IQueryParams }) => {
 
   const handlePageChange = async ({ selected }: { selected: number }) => {
     try {
+      setSpinner(true)
       const data = await getItemsFx('/items?limit=20&offset=0')
 
       if (selected > pagesCount) {
-        resetPagination(data)
+        resetPagination(isFilterInQuery ? filteredItems : data)
         return
       }
 
       if (isValidOffset && +query.offset > Math.ceil(data.count / 2)) {
-        resetPagination(data)
+        resetPagination(isFilterInQuery ? filteredItems : data)
         return
       }
 
-      const result = await getItemsFx(`/items?limit=20&offset=${selected}`)
+      const result = await getItemsFx(
+        `/items?limit=20&offset=${selected}${
+          isFilterInQuery && router.query.brand
+            ? `&boilet=${router.query.brand}`
+            : ''
+        }${
+          isFilterInQuery && router.query.priceFrom && router.query.priceTo
+            ? `&priceFrom=${router.query.priceFrom}&priceTo=${router.query.priceTo}`
+            : ''
+        }`
+      )
 
       router.push(
         {
@@ -133,17 +144,29 @@ const CatalogPage = ({ query }: { query: IQueryParams }) => {
 
       setCurrentPage(selected)
       setItems(result)
-    } catch (error) {}
+    } catch (error) {
+      toast.error((error as Error).message)
+    } finally {
+      setTimeout(() => setSpinner(false), 1000)
+    }
   }
 
   const resetFilter = async () => {
     try {
       const data = await getItemsFx('/items?limit=20&offset=0')
+      const params = router.query
+
+      delete params.brand
+      delete params.priceFrom
+      delete params.priceTo
+      params.first = 'cheap'
+
+      router.push({ query: { ...params } }, undefined, { shallow: true })
 
       setItemsBrand(itemsBrand.map((item) => ({ ...item, checked: false })))
 
       setItems(data)
-      setPriceRange([1000, 9000])
+      setPriceRange([1000, 100000])
       setIsPriceRangeChanged(false)
     } catch (error) {
       toast.error((error as Error).message)
@@ -174,7 +197,7 @@ const CatalogPage = ({ query }: { query: IQueryParams }) => {
             >
               Reset filters
             </button>
-            <FilterSelect />
+            <FilterSelect setSpinner={setSpinner} />
           </div>
         </div>
         <div className={styles.catalog__bottom}>
@@ -191,7 +214,7 @@ const CatalogPage = ({ query }: { query: IQueryParams }) => {
             />
             {spinner ? (
               <ul className={skeletonStyles.skeleton}>
-                {Array.from(new Array(8)).map((_, i) => (
+                {Array.from(new Array(20)).map((_, i) => (
                   <li
                     key={i}
                     className={`${skeletonStyles.skeleton__item} ${

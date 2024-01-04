@@ -13,6 +13,7 @@ export const setItemsByPopularity = items.createEvent()
 export const setFilteredItems = items.createEvent<IItems>()
 export const setItemsBrand = items.createEvent<IFilterCheckboxItem[]>()
 export const updateItemsBrand = items.createEvent<IFilterCheckboxItem>()
+export const setBrandFromQuery = items.createEvent<string[]>()
 
 const updateBrand = (
   brand: IFilterCheckboxItem[],
@@ -24,6 +25,21 @@ const updateBrand = (
       return {
         ...item,
         ...payload,
+      }
+    }
+
+    return item
+  })
+
+const updateBrandFromQuery = (
+  brand: IFilterCheckboxItem[],
+  brandFromQuery: string[]
+) =>
+  brand.map((item) => {
+    if (brandFromQuery.find((title) => title === item.title)) {
+      return {
+        ...item,
+        checked: true,
       }
     }
 
@@ -51,6 +67,9 @@ export const $itemsBrand = items
   .on(setItemsBrand, (_, products) => products)
   .on(updateItemsBrand, (state, payload) => [
     ...updateBrand(state, payload.id as string, { checked: payload.checked }),
+  ])
+  .on(setBrandFromQuery, (state, brandFromQuery) => [
+    ...updateBrandFromQuery(state, brandFromQuery),
   ])
 
 export const $filteredItems = items

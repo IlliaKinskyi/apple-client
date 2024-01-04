@@ -6,7 +6,7 @@ import { IPriceRangeProps } from '@/types/catalog'
 
 const STEP = 0.1
 const MIN = 0
-const MAX = 10000
+const MAX = 100000
 
 const PriceRange = ({
   priceRange,

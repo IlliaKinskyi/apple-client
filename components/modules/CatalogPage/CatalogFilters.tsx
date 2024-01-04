@@ -1,12 +1,17 @@
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import CatalogFiltersDesktop from './CatalogFiltersDesktop'
 import { ICatalogFilterProps } from '@/types/catalog'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
 import { useStore } from 'effector-react'
-import { $itemsBrand, setFilteredItems } from '@/context/items'
+import {
+  $itemsBrand,
+  setBrandFromQuery,
+  setFilteredItems,
+} from '@/context/items'
 import { useRouter } from 'next/router'
 import { getItemsFx } from '@/app/api/items'
+import { getQueryParamOnFirstRender } from '@/utils/common'
 
 const CatalogFilters = ({
   priceRange,
@@ -22,6 +27,91 @@ const CatalogFilters = ({
   const [spinner, setSpinner] = useState(false)
   const itemsBrand = useStore($itemsBrand)
   const router = useRouter()
+
+  useEffect(() => {
+    applyFiltersFromQuery()
+  }, [])
+
+  const applyFiltersFromQuery = async () => {
+    try {
+      const priceFromQueryValue = getQueryParamOnFirstRender(
+        'priceFrom',
+        router
+      )
+      const priceToQueryValue = getQueryParamOnFirstRender('priceTo', router)
+      const brandQueryValue = JSON.parse(
+        decodeURIComponent(
+          getQueryParamOnFirstRender('brand', router) as string
+        )
+      )
+      const isValidBrandQuery =
+        Array.isArray(brandQueryValue) && !!brandQueryValue?.length
+
+      const brandQuery = `&brand=${getQueryParamOnFirstRender('brand', router)}`
+      const priceQuery = `&priceFrom=${priceFromQueryValue}&priceTo=${priceToQueryValue}`
+
+      if (isValidBrandQuery && priceFromQueryValue && priceToQueryValue) {
+        updateParamsAndFilterFromQuery(() => {
+          setIsFilterInQuery(true)
+          setPriceRange([+priceFromQueryValue, +priceToQueryValue])
+          setIsPriceRangeChanged(true)
+          setBrandFromQuery(brandQueryValue)
+        }, `${currentPage}${priceQuery}${brandQuery}`)
+        return
+      }
+
+      if (priceFromQueryValue && priceToQueryValue) {
+        updateParamsAndFilterFromQuery(() => {
+          setIsFilterInQuery(true)
+          setPriceRange([+priceFromQueryValue, +priceToQueryValue])
+          setIsPriceRangeChanged(true)
+        }, `${currentPage}${priceQuery}`)
+      }
+
+      if (isValidBrandQuery) {
+        updateParamsAndFilterFromQuery(() => {
+          setIsFilterInQuery(true)
+          setBrandFromQuery(brandQueryValue)
+        }, `${currentPage}${brandQuery}`)
+      }
+    } catch (error) {
+      toast.error((error as Error).message)
+    }
+  }
+
+  const updateParamsAndFilterFromQuery = async (
+    callback: VoidFunction,
+    path: string
+  ) => {
+    callback()
+
+    const data = await getItemsFx(`/items?limit=20&offset=${path}`)
+
+    setFilteredItems(data)
+  }
+
+  async function updateParamsAndFilter<T>(updatedParams: T, path: string) {
+    const params = router.query
+
+    delete params.brand
+    delete params.priceFrom
+    delete params.priceTo
+
+    router.push(
+      {
+        query: {
+          ...params,
+          ...updatedParams,
+        },
+      },
+      undefined,
+      { shallow: true }
+    )
+
+    const data = await getItemsFx(`/items?limit=20&offset=${path}`)
+
+    setFilteredItems(data)
+  }
 
   const applyFilters = async () => {
     setIsFilterInQuery(true)
@@ -40,68 +130,38 @@ const CatalogFilters = ({
       const initialPage = currentPage > 0 ? 0 : currentPage
 
       if (brands.length && isPriceRangeChanged) {
-        router.push(
+        updateParamsAndFilter(
           {
-            query: {
-              ...router.query,
-              brand: encodedItemsQuery,
-              priceFrom,
-              priceTo,
-              offset: initialPage + 1,
-            },
+            brand: encodedItemsQuery,
+            priceFrom,
+            priceTo,
+            offset: initialPage + 1,
           },
-          undefined,
-          { shallow: true }
+          `${initialPage}${priceQuery}${brandQuery}`
         )
 
-        const data = await getItemsFx(
-          `/items?limit=20&offset=${initialPage}${priceQuery}${brandQuery}`
-        )
-
-        setFilteredItems(data)
         return
       }
 
       if (isPriceRangeChanged) {
-        router.push(
+        updateParamsAndFilter(
           {
-            query: {
-              ...router.query,
-              priceFrom,
-              priceTo,
-              offset: initialPage + 1,
-            },
+            priceFrom,
+            priceTo,
+            offset: initialPage + 1,
           },
-          undefined,
-          { shallow: true }
+          `${initialPage}${priceQuery}`
         )
-
-        const data = await getItemsFx(
-          `/items?limit=20&offset=${initialPage}${priceQuery}`
-        )
-
-        setFilteredItems(data)
       }
 
       if (brands.length) {
-        router.push(
+        updateParamsAndFilter(
           {
-            query: {
-              ...router.query,
-              brand: encodedItemsQuery,
-              offset: initialPage + 1,
-            },
+            brand: encodedItemsQuery,
+            offset: initialPage + 1,
           },
-          undefined,
-          { shallow: true }
+          `${initialPage}${brandQuery}`
         )
-
-        const data = await getItemsFx(
-          `/items?limit=20&offset=${initialPage}${brandQuery}`
-        )
-
-        setFilteredItems(data)
-        return
       }
     } catch (error) {
       toast.error((error as Error).message)
