@@ -22,6 +22,9 @@ import { IItems } from '@/types/items'
 import CatalogFilters from '@/components/modules/CatalogPage/CatalogFilters'
 import styles from '@/styles/catalog/index.module.scss'
 import skeletonStyles from '@/styles/skeleton/index.module.scss'
+import { usePopUp } from '@/hooks/usePopUp'
+import { checkQueryParams } from '@/utils/catalog'
+import FilterSvg from '@/components/elements/FilterSvg/FilterSvg'
 
 const CatalogPage = ({ query }: { query: IQueryParams }) => {
   const mode = useStore($mode)
@@ -44,6 +47,8 @@ const CatalogPage = ({ query }: { query: IQueryParams }) => {
   const resetFilterBtnDisabled = !(
     isPriceRangeChanged || isAnyItemsBrandChecked
   )
+
+  const { toggleOpen, open, closePopUp } = usePopUp()
 
   useEffect(() => {
     loadItems()
@@ -119,13 +124,15 @@ const CatalogPage = ({ query }: { query: IQueryParams }) => {
         return
       }
 
+      const { isValidBrandQuery, isValidPriceQuery } = checkQueryParams(router)
+
       const result = await getItemsFx(
         `/items?limit=20&offset=${selected}${
-          isFilterInQuery && router.query.brand
+          isFilterInQuery && isValidBrandQuery
             ? `&boilet=${router.query.brand}`
             : ''
         }${
-          isFilterInQuery && router.query.priceFrom && router.query.priceTo
+          isFilterInQuery && isValidPriceQuery
             ? `&priceFrom=${router.query.priceFrom}&priceTo=${router.query.priceTo}`
             : ''
         }`
@@ -151,7 +158,7 @@ const CatalogPage = ({ query }: { query: IQueryParams }) => {
     }
   }
 
-  const resetFilter = async () => {
+  const resetFilters = async () => {
     try {
       const data = await getItemsFx('/items?limit=20&offset=0')
       const params = router.query
@@ -193,9 +200,20 @@ const CatalogPage = ({ query }: { query: IQueryParams }) => {
             <button
               className={`${styles.catalog__top__reset} ${darkModeClass}`}
               disabled={resetFilterBtnDisabled}
-              onClick={resetFilter}
+              onClick={resetFilters}
             >
               Reset filters
+            </button>
+            <button
+              className={styles.catalog__top__mobile_btn}
+              onClick={toggleOpen}
+            >
+              <span className={styles.catalog__top__mobile_btn__svg}>
+                <FilterSvg />
+              </span>
+              <span className={styles.catalog__top__mobile_btn__text}>
+                Filter
+              </span>
             </button>
             <FilterSelect setSpinner={setSpinner} />
           </div>
@@ -207,10 +225,12 @@ const CatalogPage = ({ query }: { query: IQueryParams }) => {
               setPriceRange={setPriceRange}
               setIsPriceRangeChanged={setIsPriceRangeChanged}
               resetFilterBtnDisabled={resetFilterBtnDisabled}
-              resetFilter={resetFilter}
+              resetFilters={resetFilters}
               isPriceRangeChanged={isPriceRangeChanged}
               currentPage={currentPage}
               setIsFilterInQuery={setIsFilterInQuery}
+              closePopup={closePopUp}
+              filtersMobileOpen={open}
             />
             {spinner ? (
               <ul className={skeletonStyles.skeleton}>

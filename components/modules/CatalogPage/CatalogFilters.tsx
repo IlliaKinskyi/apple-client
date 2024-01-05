@@ -4,24 +4,27 @@ import { ICatalogFilterProps } from '@/types/catalog'
 import { useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
 import { useStore } from 'effector-react'
-import {
-  $itemsBrand,
-  setBrandFromQuery,
-  setFilteredItems,
-} from '@/context/items'
+import { $itemsBrand, setBrandFromQuery } from '@/context/items'
 import { useRouter } from 'next/router'
-import { getItemsFx } from '@/app/api/items'
 import { getQueryParamOnFirstRender } from '@/utils/common'
+import CatalogFiltersMobile from './CatalogFiltersMobile'
+import {
+  checkQueryParams,
+  updateParamsAndFilter,
+  updateParamsAndFilterFromQuery,
+} from '@/utils/catalog'
 
 const CatalogFilters = ({
   priceRange,
   setPriceRange,
   setIsPriceRangeChanged,
   resetFilterBtnDisabled,
-  resetFilter,
+  resetFilters,
   isPriceRangeChanged,
   currentPage,
   setIsFilterInQuery,
+  closePopup,
+  filtersMobileOpen,
 }: ICatalogFilterProps) => {
   const isMobile = useMediaQuery(820)
   const [spinner, setSpinner] = useState(false)
@@ -34,23 +37,18 @@ const CatalogFilters = ({
 
   const applyFiltersFromQuery = async () => {
     try {
-      const priceFromQueryValue = getQueryParamOnFirstRender(
-        'priceFrom',
-        router
-      )
-      const priceToQueryValue = getQueryParamOnFirstRender('priceTo', router)
-      const brandQueryValue = JSON.parse(
-        decodeURIComponent(
-          getQueryParamOnFirstRender('brand', router) as string
-        )
-      )
-      const isValidBrandQuery =
-        Array.isArray(brandQueryValue) && !!brandQueryValue?.length
+      const {
+        isValidBrandQuery,
+        isValidPriceQuery,
+        priceFromQueryValue,
+        priceToQueryValue,
+        brandQueryValue,
+      } = checkQueryParams(router)
 
       const brandQuery = `&brand=${getQueryParamOnFirstRender('brand', router)}`
       const priceQuery = `&priceFrom=${priceFromQueryValue}&priceTo=${priceToQueryValue}`
 
-      if (isValidBrandQuery && priceFromQueryValue && priceToQueryValue) {
+      if (isValidBrandQuery && isValidPriceQuery) {
         updateParamsAndFilterFromQuery(() => {
           setIsFilterInQuery(true)
           setPriceRange([+priceFromQueryValue, +priceToQueryValue])
@@ -75,42 +73,14 @@ const CatalogFilters = ({
         }, `${currentPage}${brandQuery}`)
       }
     } catch (error) {
-      toast.error((error as Error).message)
+      const err = error as Error
+
+      if (err.message === 'URI malformed') {
+        toast.warning('Incorrect URL for filters')
+        return
+      }
+      toast.error(err.message)
     }
-  }
-
-  const updateParamsAndFilterFromQuery = async (
-    callback: VoidFunction,
-    path: string
-  ) => {
-    callback()
-
-    const data = await getItemsFx(`/items?limit=20&offset=${path}`)
-
-    setFilteredItems(data)
-  }
-
-  async function updateParamsAndFilter<T>(updatedParams: T, path: string) {
-    const params = router.query
-
-    delete params.brand
-    delete params.priceFrom
-    delete params.priceTo
-
-    router.push(
-      {
-        query: {
-          ...params,
-          ...updatedParams,
-        },
-      },
-      undefined,
-      { shallow: true }
-    )
-
-    const data = await getItemsFx(`/items?limit=20&offset=${path}`)
-
-    setFilteredItems(data)
   }
 
   const applyFilters = async () => {
@@ -137,7 +107,8 @@ const CatalogFilters = ({
             priceTo,
             offset: initialPage + 1,
           },
-          `${initialPage}${priceQuery}${brandQuery}`
+          `${initialPage}${priceQuery}${brandQuery}`,
+          router
         )
 
         return
@@ -150,7 +121,8 @@ const CatalogFilters = ({
             priceTo,
             offset: initialPage + 1,
           },
-          `${initialPage}${priceQuery}`
+          `${initialPage}${priceQuery}`,
+          router
         )
       }
 
@@ -160,7 +132,8 @@ const CatalogFilters = ({
             brand: encodedItemsQuery,
             offset: initialPage + 1,
           },
-          `${initialPage}${brandQuery}`
+          `${initialPage}${brandQuery}`,
+          router
         )
       }
     } catch (error) {
@@ -173,7 +146,17 @@ const CatalogFilters = ({
   return (
     <>
       {isMobile ? (
-        <div></div>
+        <CatalogFiltersMobile
+          closePopup={closePopup}
+          spinner={spinner}
+          applyFilters={applyFilters}
+          priceRange={priceRange}
+          setIsPriceRangeChanged={setIsPriceRangeChanged}
+          setPriceRange={setPriceRange}
+          resetFilterBtnDisabled={resetFilterBtnDisabled}
+          resetFilters={resetFilters}
+          filtersMobileOpen={filtersMobileOpen}
+        />
       ) : (
         <CatalogFiltersDesktop
           priceRange={priceRange}
@@ -181,7 +164,7 @@ const CatalogFilters = ({
           setIsPriceRangeChanged={setIsPriceRangeChanged}
           resetFilterBtnDisabled={resetFilterBtnDisabled}
           spinner={spinner}
-          resetFilter={resetFilter}
+          resetFilters={resetFilters}
           applyFilters={applyFilters}
         />
       )}
