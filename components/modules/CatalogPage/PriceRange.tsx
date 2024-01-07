@@ -1,7 +1,7 @@
 import { $mode } from '@/context/mode'
 import { useStore } from 'effector-react'
-import styles from '@/styles/catalog/index.module.scss'
 import { Range, getTrackBackground } from 'react-range'
+import styles from '@/styles/catalog/index.module.scss'
 import { IPriceRangeProps } from '@/types/catalog'
 
 const STEP = 0.1
@@ -16,7 +16,7 @@ const PriceRange = ({
   const mode = useStore($mode)
   const darkModeClass = mode === 'dark' ? `${styles.dark_mode}` : ''
 
-  const handlerPriceRangeChange = (values: number[]) => {
+  const handlePriceRangeChange = (values: number[]) => {
     setIsPriceRangeChanged(true)
     setPriceRange(values)
   }
@@ -27,14 +27,14 @@ const PriceRange = ({
         <input
           type="text"
           value={Math.ceil(priceRange[0])}
-          placeholder="from 00 000"
+          placeholder="от 00 000"
           readOnly
         />
         <span className={styles.filters__price__inputs__border} />
         <input
           type="text"
           value={Math.ceil(priceRange[1])}
-          placeholder="to 10 000"
+          placeholder="до 100 000"
           readOnly
         />
       </div>
@@ -43,7 +43,7 @@ const PriceRange = ({
         step={STEP}
         min={MIN}
         max={MAX}
-        onChange={handlerPriceRangeChange}
+        onChange={handlePriceRangeChange}
         renderTrack={({ props, children }) => (
           <div
             onMouseDown={props.onMouseDown}
@@ -64,7 +64,7 @@ const PriceRange = ({
                 borderRadius: '4px',
                 background: getTrackBackground({
                   values: priceRange,
-                  colors: ['#B1CEFA', '#247CC8', '81CEFA'],
+                  colors: ['#B1CEFA', '#247CC8', '#B1CEFA'],
                   min: MIN,
                   max: MAX,
                 }),
@@ -89,7 +89,7 @@ const PriceRange = ({
                 borderRadius: '50%',
                 background: '#FFFFFF',
                 border: '3px solid #1C629E',
-                boxShadow: '0px 12px 8px -6px rgba(174, 181, 239, 0.2',
+                boxShadow: '0px 12px 8px -6px rgba(174, 181, 239, 0.2)',
               }}
             />
           </div>

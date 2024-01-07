@@ -1,7 +1,7 @@
 import { $mode } from '@/context/mode'
 import { useStore } from 'effector-react'
 import styles from '@/styles/catalog/index.module.scss'
-import { ICatalogFilterMobileProps, IFiltersPopupTop } from '@/types/catalog'
+import { IFiltersPopupTop } from '@/types/catalog'
 
 const FiltersPopupTop = ({
   title,
@@ -17,7 +17,7 @@ const FiltersPopupTop = ({
     <div className={`${styles.catalog__bottom__filters__top} ${darkModeClass}`}>
       <button
         onClick={closePopup}
-        className={styles.catalog__bottom__filters__title}
+        className={`${styles.catalog__bottom__filters__title} ${darkModeClass}`}
       >
         {title}
       </button>

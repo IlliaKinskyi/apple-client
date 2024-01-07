@@ -20,7 +20,7 @@ const FiltersPopup = ({
   const darkModeClass = mode === 'dark' ? `${styles.dark_mode}` : ''
   return (
     <div
-      className={`${styles.fil__popup} ${darkModeClass} ${
+      className={`${styles.filters__popup} ${darkModeClass} ${
         openPopup ? styles.open : ''
       }`}
     >

@@ -9,13 +9,19 @@ import { $shoppingCart } from '@/context/shopping-cart'
 import CartHoverCheckedSvg from '@/components/elements/CartHoverCheckedSvg/CartHoverCheckedSvg'
 import styles from '@/styles/catalog/index.module.scss'
 import spinnerStyles from '@/styles/spinner/index.module.scss'
+import { toggleCartItem } from '@/utils/shopping-cart'
+import { $user } from '@/context/user'
 
 const CatalogItem = ({ item }: { item: IItem }) => {
   const mode = useStore($mode)
+  const user = useStore($user)
   const shoppingCart = useStore($shoppingCart)
   const isInCart = shoppingCart.some((cartItem) => cartItem.itemId === item.id)
   const [spinner, setSpinner] = useState(false)
   const darkModeClass = mode === 'dark' ? `${styles.dark_mode}` : ''
+
+  const toggleToCart = () =>
+    toggleCartItem(user.username, item.id, isInCart, setSpinner)
 
   return (
     <li className={`${styles.catalog__list__item} ${darkModeClass}`}>
@@ -36,6 +42,7 @@ const CatalogItem = ({ item }: { item: IItem }) => {
           isInCart ? styles.added : ''
         }`}
         disabled={spinner}
+        onClick={toggleToCart}
       >
         {spinner ? (
           <div className={spinnerStyles.spinner} style={{ top: 6, left: 6 }} />

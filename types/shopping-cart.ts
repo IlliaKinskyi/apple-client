@@ -10,3 +10,9 @@ export interface IShoppingCartItem {
   count: number
   total_price: number
 }
+
+export interface IAddToCartFx {
+  url: string
+  username: string
+  itemId: number
+}

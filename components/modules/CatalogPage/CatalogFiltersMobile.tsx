@@ -7,6 +7,9 @@ import spinnerStyles from '@/styles/spinner/index.module.scss'
 import FiltersPopup from './FiltersPopup'
 import { $itemsBrand, setItemsBrand, updateItemsBrand } from '@/context/items'
 import { useState } from 'react'
+import Accordion from '@/components/elements/Accordion/Accordion'
+import PriceRange from './PriceRange'
+import { useMediaQuery } from '@/hooks/useMediaQuery'
 
 const CatalogFiltersMobile = ({
   spinner,
@@ -15,7 +18,11 @@ const CatalogFiltersMobile = ({
   closePopup,
   applyFilters,
   filtersMobileOpen,
+  setIsPriceRangeChanged,
+  priceRange,
+  setPriceRange,
 }: ICatalogFilterMobileProps) => {
+  const isMobile = useMediaQuery(820)
   const mode = useStore($mode)
   const darkModeClass = mode === 'dark' ? `${styles.dark_mode}` : ''
   const itemsBrand = useStore($itemsBrand)
@@ -65,7 +72,25 @@ const CatalogFiltersMobile = ({
             openPopup={openBrands}
           />
         </div>
+        <div className={styles.filters__price}>
+          <Accordion
+            title="Price"
+            titleClass={`${styles.filters__brand__btn} ${darkModeClass}`}
+            hideArrowClass={styles.hide__arrow}
+            isMobileForFilters={isMobile}
+          >
+            <div className={styles.filters__brand__inner}>
+              <PriceRange
+                priceRange={priceRange}
+                setPriceRange={setPriceRange}
+                setIsPriceRangeChanged={setIsPriceRangeChanged}
+              />
+              <div style={{ height: 24 }} />
+            </div>
+          </Accordion>
+        </div>
       </div>
+
       <div className={styles.filters__actions}>
         <button
           onClick={applyFiltersAndClosePopup}
