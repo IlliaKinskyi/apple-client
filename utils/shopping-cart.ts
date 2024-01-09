@@ -1,5 +1,13 @@
-import { addToCartFx, removeFromCartFx } from '@/app/api/shopping-cart'
-import { removeShoppingCart, updateShoppingCart } from '@/context/shopping-cart'
+import {
+  addToCartFx,
+  removeFromCartFx,
+  updateCartItemFx,
+} from '@/app/api/shopping-cart'
+import {
+  removeShoppingCart,
+  updateCartItemTotalPrice,
+  updateShoppingCart,
+} from '@/context/shopping-cart'
 import { toast } from 'react-toastify'
 
 export const toggleCartItem = async (
@@ -44,4 +52,13 @@ export const removeItemFromCart = async (
   } finally {
     setSpinner(false)
   }
+}
+
+export const updateTotalPrice = async (total_price: number, itemId: number) => {
+  const data = await updateCartItemFx({
+    url: `/shopping-cart/total_price/${itemId}`,
+    payload: { total_price },
+  })
+
+  updateCartItemTotalPrice({ itemId, total_price: data.total_price })
 }

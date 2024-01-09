@@ -5,18 +5,25 @@ import { $mode } from '@/context/mode'
 import { withClickOutside } from '@/utils/withClickOutside'
 import ShoppingCartSvg from '@/components/elements/ShoppingCartSvg/ShoppingCartSvg'
 import { AnimatePresence, motion } from 'framer-motion'
-import { $shoppingCart, setShoppingCart } from '@/context/shopping-cart'
+import {
+  $shoppingCart,
+  $totalPrice,
+  setShoppingCart,
+  setTotalPrice,
+} from '@/context/shopping-cart'
 import Link from 'next/link'
 import CartPopupItem from './CartPopupItem'
 import { getCartItemsFx } from '@/app/api/shopping-cart'
 import { $user } from '@/context/user'
 import { toast } from 'react-toastify'
 import styles from '@/styles/cartPopUp/index.module.scss'
+import { formatPrice } from '@/utils/common'
 
 const CartPopUp = forwardRef<HTMLDivElement, IWrappedComponentProps>(
   ({ open, setOpen }, ref) => {
     const mode = useStore($mode)
     const user = useStore($user)
+    const totalPrice = useStore($totalPrice)
     const shoppingCart = useStore($shoppingCart)
     const darkModeClass = mode === 'dark' ? `${styles.dark_mode}` : ''
 
@@ -24,6 +31,15 @@ const CartPopUp = forwardRef<HTMLDivElement, IWrappedComponentProps>(
 
     useEffect(() => {
       loadCartItems()
+    }, [])
+
+    useEffect(() => {
+      setTotalPrice(
+        shoppingCart.reduce(
+          (defaultCount, item) => defaultCount + item.total_price,
+          0
+        )
+      )
     }, [])
 
     const loadCartItems = async () => {
@@ -84,7 +100,9 @@ const CartPopUp = forwardRef<HTMLDivElement, IWrappedComponentProps>(
                   >
                     Total amout of the order
                   </span>
-                  <span className={styles.cart__popup__footer__price}>0</span>
+                  <span className={styles.cart__popup__footer__price}>
+                    ${formatPrice(totalPrice)}
+                  </span>
                 </div>
                 <Link href="/order" passHref legacyBehavior>
                   <button

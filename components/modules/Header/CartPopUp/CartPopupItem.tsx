@@ -3,19 +3,31 @@ import { IShoppingCartItem } from '@/types/shopping-cart'
 import { useStore } from 'effector-react'
 import Link from 'next/link'
 import DeleteSvg from '@/components/elements/DeleteSvg/DeleteSvg'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { formatPrice } from '@/utils/common'
+import { removeItemFromCart, updateTotalPrice } from '@/utils/shopping-cart'
 import styles from '@/styles/cartPopUp/index.module.scss'
 import spinnerStyles from '@/styles/spinner/index.module.scss'
-import { formatPrice } from '@/utils/common'
-import { removeItemFromCart } from '@/utils/shopping-cart'
+import CartItemCounter from '@/components/elements/CartItemCounter/CartItemCounter'
 
 const CartPopupItem = ({ item }: { item: IShoppingCartItem }) => {
   const mode = useStore($mode)
   const darkModeClass = mode === 'dark' ? `${styles.dark_mode}` : ''
   const spinnerDarkModeClass =
-    mode === 'dark' ? `${spinnerStyles.dark_mode}` : ''
+    mode === 'dark' ? '' : `${spinnerStyles.dark_mode}`
   const [spinner, setSpinner] = useState(false)
+  const [price, setPrice] = useState(item.price)
 
+  useEffect(() => {
+    setPrice(price * item.count)
+  }, [])
+
+  useEffect(() => {
+    updateTotalPrice(price, item.itemId)
+  }, [price])
+
+  const increasePrice = () => setPrice(price + item.price)
+  const decreasePrice = () => setPrice(price - item.price)
   const deleteCartItem = () => removeItemFromCart(item.itemId, setSpinner)
 
   return (
@@ -52,12 +64,18 @@ const CartPopupItem = ({ item }: { item: IShoppingCartItem }) => {
             Out of stock
           </span>
         ) : (
-          <div></div>
+          <CartItemCounter
+            totalCount={item.quantity}
+            itemId={item.itemId}
+            initialCount={item.count}
+            increasePrice={increasePrice}
+            decreasePrice={decreasePrice}
+          />
         )}
         <span
           className={`${styles.cart__popup__list__item__price} ${darkModeClass}`}
         >
-          ${formatPrice(item.price)}
+          ${formatPrice(price)}
         </span>
       </div>
     </li>

@@ -7,10 +7,10 @@ import { formatPrice } from '@/utils/common'
 import CartHoverSvg from '@/components/elements/CartHoverSvg/CartHoverSvg'
 import { $shoppingCart } from '@/context/shopping-cart'
 import CartHoverCheckedSvg from '@/components/elements/CartHoverCheckedSvg/CartHoverCheckedSvg'
-import styles from '@/styles/catalog/index.module.scss'
-import spinnerStyles from '@/styles/spinner/index.module.scss'
 import { toggleCartItem } from '@/utils/shopping-cart'
 import { $user } from '@/context/user'
+import styles from '@/styles/catalog/index.module.scss'
+import spinnerStyles from '@/styles/spinner/index.module.scss'
 
 const CatalogItem = ({ item }: { item: IItem }) => {
   const mode = useStore($mode)
