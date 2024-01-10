@@ -20,11 +20,11 @@ import { IQueryParams } from '@/types/catalog'
 import { useRouter } from 'next/router'
 import { IItems } from '@/types/items'
 import CatalogFilters from '@/components/modules/CatalogPage/CatalogFilters'
-import styles from '@/styles/catalog/index.module.scss'
-import skeletonStyles from '@/styles/skeleton/index.module.scss'
 import { usePopUp } from '@/hooks/usePopUp'
 import { checkQueryParams } from '@/utils/catalog'
 import FilterSvg from '@/components/elements/FilterSvg/FilterSvg'
+import styles from '@/styles/catalog/index.module.scss'
+import skeletonStyles from '@/styles/skeleton/index.module.scss'
 
 const CatalogPage = ({ query }: { query: IQueryParams }) => {
   const mode = useStore($mode)

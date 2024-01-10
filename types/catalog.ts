@@ -18,6 +18,7 @@ export interface IQueryParams {
   cpu: string
   priceFrom: string
   priceTo: string
+  itemId: string
 }
 
 export interface IFilterCheckboxItem {
