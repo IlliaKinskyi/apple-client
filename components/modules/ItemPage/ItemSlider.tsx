@@ -4,7 +4,7 @@ import Slider from 'react-slick'
 import 'slick-carousel/slick/slick.css'
 import 'slick-carousel/slick/slick-theme.css'
 
-const ItemSlider = (images: string[]) => {
+const ItemSlider = ({ images }: { images: string[] }) => {
   const isMobile700 = useMediaQuery(700)
   const isMobile530 = useMediaQuery(530)
 

@@ -26,6 +26,15 @@ const DashboardPage = () => {
     loadItems()
   }, [])
 
+  useEffect(() => {
+    if (shoppingCart.length) {
+      setShowAlert(true)
+      return
+    }
+
+    setShowAlert(false)
+  }, [shoppingCart.length])
+
   const loadItems = async () => {
     try {
       setSpinner(true)

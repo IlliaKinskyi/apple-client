@@ -3,3 +3,8 @@ export interface IItemImagesItemProps {
   callback: (arg0: string) => void
   alt: string
 }
+
+export interface IItemAccordionProps {
+  title: string
+  children: React.ReactNode
+}

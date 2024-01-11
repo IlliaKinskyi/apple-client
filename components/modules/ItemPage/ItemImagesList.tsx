@@ -4,6 +4,7 @@ import { $item } from '@/context/item'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import ItemImagesItem from './ItemImagesItem'
 import styles from '@/styles/item/index.module.scss'
+import ItemSlider from './ItemSlider'
 
 const ItemImagesList = () => {
   const item = useStore($item)
@@ -14,7 +15,7 @@ const ItemImagesList = () => {
   return (
     <div className={styles.item__images}>
       {isMobile ? (
-        <div />
+        <ItemSlider images={images} />
       ) : (
         <>
           <div className={styles.item__images__main}>

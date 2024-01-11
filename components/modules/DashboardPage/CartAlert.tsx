@@ -4,9 +4,11 @@ import { useStore } from 'effector-react'
 import styles from '@/styles/dashboard/index.module.scss'
 import { formatPrice } from '@/utils/common'
 import Link from 'next/link'
+import { $totalPrice } from '@/context/shopping-cart'
 
 const CartAlert = ({ count, closeAlert }: ICartAlertProps) => {
   const mode = useStore($mode)
+  const totalPrice = useStore($totalPrice)
   const darkModeClass = mode === 'dark' ? `${styles.dark_mode}` : ''
 
   const showCountMessage = (count: string) => {
@@ -21,9 +23,9 @@ const CartAlert = ({ count, closeAlert }: ICartAlertProps) => {
     <>
       <div className={`${styles.dashboard__alert__left} ${darkModeClass}`}>
         <span>
-          In cart {count} {showCountMessage(`${count}`)}
+          {count} {showCountMessage(`${count}`)} in cart
         </span>
-        <span>For the amount ${formatPrice(0)}</span>
+        <span>For the amount ${formatPrice(totalPrice)}</span>
       </div>
       <div className={styles.dashboard__alert__right}>
         <Link href="/order" legacyBehavior passHref>
