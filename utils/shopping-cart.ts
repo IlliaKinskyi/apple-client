@@ -13,12 +13,9 @@ import { toast } from 'react-toastify'
 export const toggleCartItem = async (
   username: string,
   itemId: number,
-  isInCart: boolean,
-  setSpinner: (arg0: boolean) => void
+  isInCart: boolean
 ) => {
   try {
-    setSpinner(true)
-
     if (isInCart) {
       await removeFromCartFx(`/shopping-cart/one/${itemId}`)
       removeShoppingCart(itemId)
@@ -34,23 +31,15 @@ export const toggleCartItem = async (
     updateShoppingCart(data)
   } catch (error) {
     toast.error((error as Error).message)
-  } finally {
-    setSpinner(false)
   }
 }
 
-export const removeItemFromCart = async (
-  itemId: number,
-  setSpinner: (arg0: boolean) => void
-) => {
+export const removeItemFromCart = async (itemId: number) => {
   try {
-    setSpinner(true)
     await removeFromCartFx(`/shopping-cart/one/${itemId}`)
     removeShoppingCart(itemId)
   } catch (error) {
     toast.error((error as Error).message)
-  } finally {
-    setSpinner(false)
   }
 }
 

@@ -4,7 +4,7 @@ import { $item } from '@/context/item'
 import ItemImagesList from '@/components/modules/ItemPage/ItemImagesList'
 import { formatPrice } from '@/utils/common'
 import { $shoppingCart } from '@/context/shopping-cart'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import CartHoverCheckedSvg from '@/components/elements/CartHoverCheckedSvg/CartHoverCheckedSvg'
 import CartHoverSvg from '@/components/elements/CartHoverSvg/CartHoverSvg'
 import { toggleCartItem } from '@/utils/shopping-cart'
@@ -16,6 +16,7 @@ import { toast } from 'react-toastify'
 import { getItemsFx } from '@/app/api/items'
 import { $items, setItems, setItemsByPopularity } from '@/context/items'
 import ItemAccordion from '@/components/modules/ItemPage/ItemAccordion'
+import { removeFromCartFx } from '@/app/api/shopping-cart'
 import styles from '@/styles/item/index.module.scss'
 import spinnerStyles from '@/styles/spinner/index.module.scss'
 
@@ -28,11 +29,10 @@ const ItemPage = () => {
   const isMobile = useMediaQuery(850)
   const darkModeClass = mode === 'dark' ? `${styles.dark_mode}` : ''
   const isInCart = shoppingCart.some((product) => product.itemId === item.id)
-  const [spinnerToggleCart, setSpinnerToggleCart] = useState(false)
-  const [spinnerSlider, setSpinnerSlider] = useState(false)
+  const spinnerToggleCart = useStore(removeFromCartFx.pending)
+  const spinnerSlider = useStore(getItemsFx.pending)
 
-  const toggleToCart = () =>
-    toggleCartItem(user.username, item.id, isInCart, setSpinnerToggleCart)
+  const toggleToCart = () => toggleCartItem(user.username, item.id, isInCart)
 
   useEffect(() => {
     loadItems()
@@ -40,15 +40,12 @@ const ItemPage = () => {
 
   const loadItems = async () => {
     try {
-      setSpinnerSlider(true)
       const data = await getItemsFx('/items?limit=20&offset=0')
 
       setItems(data)
       setItemsByPopularity()
     } catch (error) {
       toast.error((error as Error).message)
-    } finally {
-      setTimeout(() => setSpinnerSlider(false), 1000)
     }
   }
 
