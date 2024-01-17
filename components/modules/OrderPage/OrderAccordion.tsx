@@ -6,8 +6,10 @@ import DoneSvg from '@/components/elements/DoneSvg/DoneSvg'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import EditSvg from '@/components/elements/EditSvg/EditSvg'
 import { useState } from 'react'
-import { $shoppingCart } from '@/context/shopping-cart'
+import { $shoppingCart, $totalPrice } from '@/context/shopping-cart'
 import CartPopupItem from '../Header/CartPopUp/CartPopupItem'
+import { formatPrice } from '@/utils/common'
+import OrderItem from './OrderItem'
 import styles from '@/styles/order/index.module.scss'
 
 const OrderAccordion = ({
@@ -16,12 +18,20 @@ const OrderAccordion = ({
 }: IOrderAccordionProps) => {
   const mode = useStore($mode)
   const shoppingCart = useStore($shoppingCart)
+  const totalPrice = useStore($totalPrice)
   const darkModeClass = mode === 'dark' ? `${styles.dark_mode}` : ''
   const isMobile550 = useMediaQuery(550)
-
   const [expanded, setExpanded] = useState(false)
 
-  const toggleAccordion = () => setExpanded(!expanded)
+  const openAccordion = () => {
+    setOrderIsReady(false)
+    setExpanded(true)
+  }
+
+  const closeAccordion = () => {
+    setOrderIsReady(true)
+    setExpanded(false)
+  }
 
   return (
     <>
@@ -39,7 +49,7 @@ const OrderAccordion = ({
         </h3>
         <button
           className={styles.order__cart__title__btn}
-          onClick={toggleAccordion}
+          onClick={openAccordion}
         >
           <span>
             <EditSvg />
@@ -68,7 +78,7 @@ const OrderAccordion = ({
                     isMobile550 ? (
                       <CartPopupItem key={item.id} item={item} />
                     ) : (
-                      <div />
+                      <OrderItem item={item} key={item.id} />
                     )
                   )
                 ) : (
@@ -81,6 +91,25 @@ const OrderAccordion = ({
                   </li>
                 )}
               </ul>
+              <div className={styles.order__cart__footer}>
+                <div className={styles.order__cart__footer__total}>
+                  <span
+                    className={`${styles.order__cart__footer__text} ${darkModeClass}`}
+                  >
+                    Total amout of the order
+                  </span>
+                  <span className={styles.order__cart__footer__price}>
+                    ${formatPrice(totalPrice)}
+                  </span>
+                </div>
+                <button
+                  className={styles.order__cart__footer__btn}
+                  onClick={closeAccordion}
+                  disabled={!shoppingCart.length}
+                >
+                  Continue
+                </button>
+              </div>
             </div>
           </motion.div>
         )}

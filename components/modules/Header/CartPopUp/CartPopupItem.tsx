@@ -4,10 +4,10 @@ import { useStore } from 'effector-react'
 import Link from 'next/link'
 import DeleteSvg from '@/components/elements/DeleteSvg/DeleteSvg'
 import { formatPrice } from '@/utils/common'
-import styles from '@/styles/cartPopUp/index.module.scss'
-import spinnerStyles from '@/styles/spinner/index.module.scss'
 import CartItemCounter from '@/components/elements/CartItemCounter/CartItemCounter'
 import { usePrice } from '@/hooks/usePrice'
+import styles from '@/styles/cartPopUp/index.module.scss'
+import spinnerStyles from '@/styles/spinner/index.module.scss'
 
 const CartPopupItem = ({ item }: { item: IShoppingCartItem }) => {
   const mode = useStore($mode)
