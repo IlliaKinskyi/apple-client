@@ -37,12 +37,12 @@ const HeaderTop = () => {
         >
           <ul className={styles.header__nav__list}>
             <li className={styles.header__nav__list__item}>
-              <Link href="/shopping-payment" passHref legacyBehavior>
+              <Link href="/shipping-payment" passHref legacyBehavior>
                 <a
                   className={`${styles.header__nav__list__item__link} ${darkModeClass}`}
                   onClick={closePopUp}
                 >
-                  Shopping and payment
+                  Shipping and payment
                 </a>
               </Link>
             </li>

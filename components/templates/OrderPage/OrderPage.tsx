@@ -2,9 +2,9 @@ import { $mode } from '@/context/mode'
 import { $shoppingCart, $totalPrice } from '@/context/shopping-cart'
 import { formatPrice } from '@/utils/common'
 import { useStore } from 'effector-react'
-import styles from '@/styles/order/index.module.scss'
 import OrderAccordion from '@/components/modules/OrderPage/OrderAccordion'
 import { useState } from 'react'
+import styles from '@/styles/order/index.module.scss'
 
 const OrderPage = () => {
   const mode = useStore($mode)
