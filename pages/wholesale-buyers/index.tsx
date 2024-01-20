@@ -1,12 +1,12 @@
 import Layout from '@/components/layout/Layout'
-import AboutPage from '@/components/templates/AboutPage/AboutPage'
+import ContactsPage from '@/components/templates/ContactsPage/ContactsPage'
 import Head from 'next/head'
 
-function About() {
+function Contacts() {
   return (
     <>
       <Head>
-        <title>Apple Store | About company</title>
+        <title>Apple Store | Wholesale Buyers</title>
         <meta charSet="UTF-8" />
         <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -14,7 +14,7 @@ function About() {
       </Head>
       <Layout>
         <main>
-          <AboutPage />
+          <ContactsPage isWholesaleBuyersPage={true} />
           <div className="overlay" />
         </main>
       </Layout>
@@ -22,4 +22,4 @@ function About() {
   )
 }
 
-export default About
+export default Contacts
