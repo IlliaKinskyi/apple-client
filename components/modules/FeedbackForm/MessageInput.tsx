@@ -3,7 +3,6 @@ import styles from '@/styles/feedbackForm/index.module.scss'
 
 const MessageInput = ({ register, errors, darkModeClass }: IFeedbackInput) => (
   <label className={`${styles.feedback_form__form__label} ${darkModeClass}`}>
-    <span>Email *</span>
     <textarea
       className={`${styles.feedback_form__form__textarea} ${darkModeClass}`}
       placeholder="Enter your message (20 to 300 characters)"

@@ -6,18 +6,26 @@ const PhoneInput = ({ register, errors, darkModeClass }: IFeedbackInput) => (
     <span>Phone *</span>
     <input
       className={styles.feedback_form__form__input}
-      type="email"
-      placeholder="john@gmail.com"
-      {...register('email', {
-        required: 'Enter your email',
+      type="phone"
+      placeholder="+38 099 99 99 999"
+      {...register('phone', {
+        required: 'Enter your phone number',
         pattern: {
-          value: /\S+@\S+\.\S+/,
-          message: 'Incorrect Email!',
+          value: /^\d*[1-9]\d*$/,
+          message: 'Incorrect phone number!',
         },
+        minLength: 11,
+        maxLength: 11,
       })}
     />
     {errors.phone && (
-      <span className={styles.error_alert}>{errors.email?.message}</span>
+      <span className={styles.error_alert}>{errors.phone?.message}</span>
+    )}
+    {errors.phone && errors.phone.type === 'minLength' && (
+      <span className={styles.error_alert}>Minimum 11 digits!</span>
+    )}
+    {errors.phone && errors.phone.type === 'maxLength' && (
+      <span className={styles.error_alert}>No more than 11 digits!</span>
     )}
   </label>
 )

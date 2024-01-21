@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@emailjs/browser": "^3.12.1",
     "@types/react-slick": "^0.23.12",
     "axios": "^1.6.2",
     "effector": "^22.7.0",
