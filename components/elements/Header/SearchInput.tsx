@@ -2,7 +2,7 @@ import { useStore } from 'effector-react'
 import { $mode } from '@/context/mode'
 import Select from 'react-select'
 import { MutableRefObject, useRef, useState } from 'react'
-import { SelectOptionType } from '@/types/common'
+import { IOption, SelectOptionType } from '@/types/common'
 import {
   controlStyles,
   inputStyles,
@@ -10,12 +10,22 @@ import {
   optionStyles,
 } from '@/styles/searchInput'
 import {
+  createSelectOption,
   removeClassNameForOverlayAndBody,
   toggleClassNameForOverlayAndBody,
 } from '@/utils/common'
 import { $searchInputZIndex, setSearchInputZIndex } from '@/context/header'
 import SearchSvg from '../SearchSvg/SearchSvg'
 import styles from '@/styles/header/index.module.scss'
+import { useDebounceCallback } from '@/hooks/useDebounceCallback'
+import { getItemByNameFx, searchItemsFx } from '@/app/api/items'
+import { toast } from 'react-toastify'
+import { IItem } from '@/types/items'
+import { useRouter } from 'next/router'
+import {
+  NoOptionsMessage,
+  NoOptionsSpinner,
+} from '../SelectOptionsMessage/SelectOptionsMessage'
 
 const SearchInput = () => {
   const mode = useStore($mode)
@@ -26,12 +36,24 @@ const SearchInput = () => {
   const [onMenuOpenContainerStyles, setOnMenuOpenContainerStyles] = useState({})
   const btnRef = useRef() as MutableRefObject<HTMLButtonElement>
   const borderRef = useRef() as MutableRefObject<HTMLButtonElement>
+  const [options, setOptions] = useState([])
+  const [inputValue, setInputValue] = useState('')
+  const delayCallback = useDebounceCallback(1000)
+  const spinner = useStore(searchItemsFx.pending)
+  const router = useRouter()
 
   const handleSearchOptionChange = (selectedOption: SelectOptionType) => {
     if (!selectedOption) {
       setSearchOption(null)
       return
     }
+
+    const name = (selectedOption as IOption)?.value as string
+
+    if (name) {
+      getItemAndRedirect(name)
+    }
+
     setSearchOption(selectedOption)
     removeClassNameForOverlayAndBody()
   }
@@ -41,9 +63,49 @@ const SearchInput = () => {
     setSearchInputZIndex(100)
   }
 
-  const onSearchInputChange = () => {
+  const handleSearchClick = async () => {
+    if (!inputValue) {
+      return
+    }
+
+    getItemAndRedirect(inputValue)
+  }
+
+  const searchItem = async (search: string) => {
+    try {
+      setInputValue(search)
+      const data = await searchItemsFx({
+        url: '/items/search',
+        search,
+      })
+
+      const names = data.map((item: IItem) => item.name).map(createSelectOption)
+
+      setOptions(names)
+    } catch (error) {
+      toast.error((error as Error).message)
+    }
+  }
+
+  const getItemAndRedirect = async (name: string) => {
+    const item = await getItemByNameFx({
+      url: '/items/name',
+      name,
+    })
+
+    if (!item.id) {
+      toast.warning('Product not found')
+      return
+    }
+
+    router.push(`/catalog/${item.id}`)
+  }
+
+  const onSearchInputChange = (text: string) => {
     document.querySelector('.overlay')?.classList.add('open')
     document.querySelector('.overlay')?.classList.add('open-search')
+
+    delayCallback(() => searchItem(text))
   }
 
   const onSearchMenuOpen = () => {
@@ -80,6 +142,9 @@ const SearchInput = () => {
     <>
       <div className={styles.header__search__inner}>
         <Select
+          components={{
+            NoOptionsMessage: spinner ? NoOptionsSpinner : NoOptionsMessage,
+          }}
           placeholder="I'm looking..."
           value={searchOption}
           onChange={handleSearchOptionChange}
@@ -115,10 +180,7 @@ const SearchInput = () => {
           onMenuOpen={onSearchMenuOpen}
           onMenuClose={onSearchMenuClose}
           onInputChange={onSearchInputChange}
-          options={[1, 2, 5, 7, 8].map((item) => ({
-            value: item,
-            label: item,
-          }))}
+          options={options}
         />
         <span ref={borderRef} className={styles.header__search__border} />
       </div>
@@ -126,6 +188,7 @@ const SearchInput = () => {
         className={`${styles.header__search__btn} ${darkModeClass}`}
         ref={btnRef}
         style={{ zIndex }}
+        onClick={handleSearchClick}
       >
         <span className={styles.header__search__btn__span}>
           <SearchSvg />
