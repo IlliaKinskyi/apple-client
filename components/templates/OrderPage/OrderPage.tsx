@@ -1,5 +1,9 @@
 import { $mode } from '@/context/mode'
-import { $shoppingCart, $totalPrice } from '@/context/shopping-cart'
+import {
+  $shoppingCart,
+  $totalPrice,
+  setShoppingCart,
+} from '@/context/shopping-cart'
 import { formatPrice } from '@/utils/common'
 import { useStore } from 'effector-react'
 import OrderAccordion from '@/components/modules/OrderPage/OrderAccordion'
@@ -15,6 +19,10 @@ const OrderPage = () => {
   const [agreement, setAgreement] = useState(false)
 
   const handleAgreementChange = () => setAgreement(!agreement)
+
+  const makeOrder = () => {
+    setShoppingCart([])
+  }
 
   return (
     <section className={styles.order}>
@@ -54,6 +62,7 @@ const OrderPage = () => {
               <button
                 disabled={!(orderIsReady && agreement)}
                 className={styles.order__pay__btn}
+                onClick={makeOrder}
               >
                 Confirm order
               </button>
