@@ -52,6 +52,6 @@ export const logoutFx = createEffect(async (url: string) => {
   try {
     await api.get(url)
   } catch (error) {
-    const axiosError = error as AxiosError
+    toast.error((error as Error).message)
   }
 })

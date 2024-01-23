@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import { useForm } from 'react-hook-form'
 import NameInput from '@/components/elements/AuthPage/NameInput'
 import { IInputs } from '@/types/auth'

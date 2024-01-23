@@ -64,7 +64,7 @@ const ItemTabs = () => {
           className={styles.item__tabs__content}
         >
           <p className={`${styles.item__tabs__content__text} ${darkModeClass}`}>
-            Diagonal: {item.diagonal}"
+            Diagonal: {item.diagonal} &quot;
           </p>
           <p className={`${styles.item__tabs__content__text} ${darkModeClass}`}>
             CPU: {item.cpu}

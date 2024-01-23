@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import { IBrandSliderArrow } from '@/types/elements'
 import BrandSliderArrowSvg from '../BrandSliderArrow/BrandSliderArrow'
 import styles from '@/styles/dashboard/index.module.scss'

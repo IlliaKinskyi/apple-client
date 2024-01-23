@@ -131,7 +131,7 @@ const ItemPage = () => {
                 <p
                   className={`${styles.item__tabs__content__text} ${darkModeClass}`}
                 >
-                  Diagonal: {item.diagonal}"
+                  Diagonal: {item.diagonal} &quot;
                 </p>
                 <p
                   className={`${styles.item__tabs__content__text} ${darkModeClass}`}
@@ -164,7 +164,7 @@ const ItemPage = () => {
         )}
         <div className={styles.item__bottom}>
           <h2 className={`${styles.item__title} ${darkModeClass}`}>
-            You'll like it
+            You&apos;ll like it
           </h2>
           <DashboardSlider
             goToItemPage

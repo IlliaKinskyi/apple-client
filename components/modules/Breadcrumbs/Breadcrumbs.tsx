@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import { useMemo } from 'react'
 import { useStore } from 'effector-react'
 import { useRouter } from 'next/router'

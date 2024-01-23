@@ -13,7 +13,7 @@ function App({ Component, pageProps }: AppProps) {
 
   useEffect(() => {
     setMounted(true)
-  })
+  }, [])
   return (
     mounted && (
       <>
