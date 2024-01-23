@@ -1,8 +1,13 @@
+import { useCallback } from 'react'
 import Layout from '@/components/layout/Layout'
+import Breadcrumbs from '@/components/modules/Breadcrumbs/Breadcrumbs'
 import AboutPage from '@/components/templates/AboutPage/AboutPage'
 import Head from 'next/head'
 
 function About() {
+  const getDefaultTextGenerator = useCallback(() => 'About company', [])
+  const getTextGenerator = useCallback((param: string) => ({})[param], [])
+
   return (
     <>
       <Head>
@@ -14,6 +19,10 @@ function About() {
       </Head>
       <Layout>
         <main>
+          <Breadcrumbs
+            getDefaultTextGenerator={getDefaultTextGenerator}
+            getTextGenerator={getTextGenerator}
+          />
           <AboutPage />
           <div className="overlay" />
         </main>

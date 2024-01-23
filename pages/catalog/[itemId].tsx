@@ -7,19 +7,32 @@ import { IQueryParams } from '@/types/catalog'
 import { useStore } from 'effector-react'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
 import Custom404 from '../404'
+import Breadcrumbs from '@/components/modules/Breadcrumbs/Breadcrumbs'
 
 function CatalogItemPage({ query }: { query: IQueryParams }) {
   const { shouldLoadContent } = userRedirectByUserCheck()
   const item = useStore($item)
   const [error, setError] = useState(false)
   const router = useRouter()
+  const getDefaultTextGenerator = useCallback(
+    (subpath: string) => subpath.replace('catalog', 'Catalog'),
+    []
+  )
+  const getTextGenerator = useCallback((param: string) => ({})[param], [])
+  const lastCrumb = document.querySelector('.last-crumb') as HTMLElement
 
   useEffect(() => {
     loadItem()
   }, [router.asPath])
+
+  useEffect(() => {
+    if (lastCrumb) {
+      lastCrumb.textContent = item.name
+    }
+  }, [lastCrumb, item])
 
   const loadItem = async () => {
     try {
@@ -51,6 +64,10 @@ function CatalogItemPage({ query }: { query: IQueryParams }) {
         shouldLoadContent && (
           <Layout>
             <main>
+              <Breadcrumbs
+                getDefaultTextGenerator={getDefaultTextGenerator}
+                getTextGenerator={getTextGenerator}
+              />
               <ItemPage />
               <div className="overlay" />
             </main>
